@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WeChat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="login" id="login">
+        <input type="text" id="username" placeholder="Enter your username">
+        <button type="submit" onclick="Join()">Join</button>
+    </div>
+
+    <div id="chat" style="display: none;">
+        <ul id="messages"></ul>
+        <input type="text" id="chatInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+<!-- Import the socket  -->
+<!-- <script></script> -->
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script>
+        // Replace this with the machine IP 
+        let socket = io("http://192.168.11.202:3001/");
+        let username;
+
+        socket.on("message", (msg) => {
+            const li = document.createElement('li');
+            li.textContent = msg;
+            document.getElementById("messages").appendChild(li);
+        });
+
+        function Join() {
+            username = document.getElementById("username").value;
+            socket.emit("join", username);
+            document.getElementById("login").style.display = "none";
+            document.getElementById("chat").style.display = "block";
+        }
+
+        function sendMessage() {
+            const message = document.getElementById("chatInput").value;
+            socket.emit('chat', `${username}: ${message}`);
+            document.getElementById("chatInput").value = "";
+        }
+    </script>
+</body>
+
+</html>
